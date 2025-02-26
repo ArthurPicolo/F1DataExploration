@@ -29,14 +29,59 @@ df_complete = pd.merge(merge3, df_status, on = 'statusId')
 
 After merging the datasets, I handled missing values, performed statistical analysis, and removed or renamed unnecessary columns to streamline the data.
 
+```python
+df_complete.head()
+df_complete.isnull().sum()
+df_complete.isna().sum()
+df_complete.info()
+
+df_complete = df_complete.drop(columns=['url', 'url_x', 'url_y', 'fastestLapTime', 'time_y', 'fp1_date', 'round', 'circuitId',
+                                        'fp1_time', 'fp2_date', 'fp2_time', 'fp3_date', 'fp3_time', 'quali_date', 'quali_time',
+                                        'sprint_date', 'sprint_time'])
+
+col_name = {'number_x':'number','milliseconds':'timetaken_in_millisec', 'time_x': 'time', 'name_x': 'GrandPrixName',
+            'number_y':'driverNum','code':'driverCode','nationality_x':'driverNationality','name_y':'constructorName',
+            'nationality_y': 'constructorNationality', 'name': 'constructorName', 'fastestLapSpeed': 'maxSpeed'}
+
+df_complete.rename(columns=col_name,inplace=True)
+df_complete.head()
+
+```
+
 #### Data Cleaning and Transformation
 
 - Converted data types to enable accurate calculations, such as driver ages
-- Addressed inaccuracies in age calculations by incorporating a new column containing the date of death for deceased drivers using web scraping
+
+```python
+df_complete['dob'] = df_complete['dob'].str.strip()
+df_complete['dob'] = pd.to_datetime(df_complete['dob'], dayfirst=True, errors='coerce')
+
+## Handling Null values and unformatted date to convert it to datetime
+df_complete['driverDeath'] = df_complete['driverDeath'].str.strip()
+df_complete['driverDeath'] = df_complete['driverDeath'].replace('\\N', np.nan)
+df_complete['driverDeath'] = pd.to_datetime(df_complete['driverDeath'], errors='coerce', dayfirst=True)
+```
+
+- Addressed inaccuracies in age calculations by incorporating a new column containing the date of death drivers using web scraping (**drivers_update.ipynb**)
+  
 - Managed missing numerical values to maintain data integrity
+  
+```python
+## Changing the numeric data type
+change_data_type = ['number', 'position', 'time', 'timetaken_in_millisec', 'fastestLap', 'rank', 'maxSpeed']
+for i in change_data_type:
+    df_complete[i] = pd.to_numeric(df_complete[i], errors='coerce')
+```
+
 - Enhanced geographic data by mapping driver nationalities to their respective countries, allowing for effective visual representation on Power BI maps
 
-To achieve one of my key goals—identifying drivers who died while racing—I used web scraping to extract relevant data from Wikipedia and integrated it into the dataset.
+```python
+nationality_map = dict(zip(df_countries['Nationality'], df_countries['Country']))
+df_complete['driverNationality'] = df_complete['driverNationality'].map(nationality_map).fillna(df_complete['driverNationality'])
+df_complete.head()
+```
+
+To achieve one of my key goals—identifying drivers who died while racing—I used web scraping to extract relevant data from Wikipedia and integrated it into the dataset (**wsFatalities.ipynb**).
 
 After finalizing the dataset, I exported it as a single, clean CSV file: **F1Dataset.csv**.
 
@@ -73,5 +118,3 @@ That year also saw a rise in incidents like spinning off, collisions, and accide
 There’s still a lot more to uncover in this dataset, from detailed driver stats to constructor performance. If you're curious, you can check out the dataset [here](https://app.powerbi.com/view?r=eyJrIjoiZTg2MGM5MjItOTkzMy00NmE1LTg5MWQtMTM0ZjAxMGRlMmEwIiwidCI6ImI4ZGM5MmQ2LTk3YjktNDcxYS05OTRhLWY3YmY2ZjgwMjllZSJ9).
 
 This project gave me the chance to apply a mix of Python and Power BI skills to explore one of my favorite sports, and I’m excited to keep digging into more insights in the future.
-
-
