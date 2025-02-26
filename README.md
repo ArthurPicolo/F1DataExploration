@@ -2,7 +2,7 @@
 
 ## Introduction
 
-While watching *Senna* on Netflix and seeing his fight against FIA's 1994 ban on performance-enhancing technology (the same year of his tragic accident), I started wondering about Formula 1 data. How many accidents happened after the new regulations? What exactly was banned? How many drivers have lost their lives in F1 history? And, of course, who are the best drivers and teams?
+While watching *Senna* on Netflix and seeing his fight against FIA's 1994 ban on performance-enhancing technology (the same year of his accident), I started wondering about Formula 1 data. How many accidents happened after the new regulations? What exactly was banned? How many drivers have lost their lives in F1 history? And, of course, who are the best drivers and teams?
 
 With these questions in mind, I turned to Kaggle and found the [Formula 1 Dataset](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020), containing data from 1950 to 2020. It was the perfect starting point for this project.
 
