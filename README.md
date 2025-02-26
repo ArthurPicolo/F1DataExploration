@@ -30,9 +30,7 @@ df_complete = pd.merge(merge3, df_status, on = 'statusId')
 After merging the datasets, I handled missing values, performed statistical analysis, and removed or renamed unnecessary columns to streamline the data.
 
 ```python
-df_complete.head()
 df_complete.isnull().sum()
-df_complete.isna().sum()
 df_complete.info()
 
 df_complete = df_complete.drop(columns=['url', 'url_x', 'url_y', 'fastestLapTime', 'time_y', 'fp1_date', 'round', 'circuitId',
@@ -42,9 +40,6 @@ df_complete = df_complete.drop(columns=['url', 'url_x', 'url_y', 'fastestLapTime
 col_name = {'number_x':'number','milliseconds':'timetaken_in_millisec', 'time_x': 'time', 'name_x': 'GrandPrixName',
             'number_y':'driverNum','code':'driverCode','nationality_x':'driverNationality','name_y':'constructorName',
             'nationality_y': 'constructorNationality', 'name': 'constructorName', 'fastestLapSpeed': 'maxSpeed'}
-
-df_complete.rename(columns=col_name,inplace=True)
-df_complete.head()
 
 ```
 
