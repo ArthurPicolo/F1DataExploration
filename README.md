@@ -20,61 +20,61 @@ The main goal was to clean, analyze, and explore Formula 1 data to answer these 
 
 The first step was to analyze the structure of each CSV file and merge them into a single DataFrame, making the data easier to work with in Python and Power BI.
 
-```python
-merge1 = pd.merge(df_results, df_races, on='raceId')
-merge2 = pd.merge(merge1, df_drivers, on ='driverId')
-merge3 = pd.merge(merge2, df_constructors, on = 'constructorId')
-df_complete = pd.merge(merge3, df_status, on = 'statusId')
-```
+  ```python
+  merge1 = pd.merge(df_results, df_races, on='raceId')
+  merge2 = pd.merge(merge1, df_drivers, on ='driverId')
+  merge3 = pd.merge(merge2, df_constructors, on = 'constructorId')
+  df_complete = pd.merge(merge3, df_status, on = 'statusId')
+  ```
 
 After merging the datasets, I handled missing values, performed statistical analysis, and removed or renamed unnecessary columns to streamline the data.
 
-```python
-df_complete.isnull().sum()
-df_complete.info()
-
-df_complete = df_complete.drop(columns=['url', 'url_x', 'url_y', 'fastestLapTime', 'time_y', 'fp1_date', 'round', 'circuitId',
-                                        'fp1_time', 'fp2_date', 'fp2_time', 'fp3_date', 'fp3_time', 'quali_date', 'quali_time',
-                                        'sprint_date', 'sprint_time'])
-
-col_name = {'number_x':'number','milliseconds':'timetaken_in_millisec', 'time_x': 'time', 'name_x': 'GrandPrixName',
-            'number_y':'driverNum','code':'driverCode','nationality_x':'driverNationality','name_y':'constructorName',
-            'nationality_y': 'constructorNationality', 'name': 'constructorName', 'fastestLapSpeed': 'maxSpeed'}
-
-```
+  ```python
+  df_complete.isnull().sum()
+  df_complete.info()
+  
+  df_complete = df_complete.drop(columns=['url', 'url_x', 'url_y', 'fastestLapTime', 'time_y', 'fp1_date', 'round', 'circuitId',
+                                          'fp1_time', 'fp2_date', 'fp2_time', 'fp3_date', 'fp3_time', 'quali_date', 'quali_time',
+                                          'sprint_date', 'sprint_time'])
+  
+  col_name = {'number_x':'number','milliseconds':'timetaken_in_millisec', 'time_x': 'time', 'name_x': 'GrandPrixName',
+              'number_y':'driverNum','code':'driverCode','nationality_x':'driverNationality','name_y':'constructorName',
+              'nationality_y': 'constructorNationality', 'name': 'constructorName', 'fastestLapSpeed': 'maxSpeed'}
+  
+  ```
 
 #### Data Cleaning and Transformation
 
 - Converted data types to enable accurate calculations, such as driver ages
 
-```python
-df_complete['dob'] = df_complete['dob'].str.strip()
-df_complete['dob'] = pd.to_datetime(df_complete['dob'], dayfirst=True, errors='coerce')
-
-## Handling Null values and unformatted date to convert it to datetime
-df_complete['driverDeath'] = df_complete['driverDeath'].str.strip()
-df_complete['driverDeath'] = df_complete['driverDeath'].replace('\\N', np.nan)
-df_complete['driverDeath'] = pd.to_datetime(df_complete['driverDeath'], errors='coerce', dayfirst=True)
-```
+  ```python
+  df_complete['dob'] = df_complete['dob'].str.strip()
+  df_complete['dob'] = pd.to_datetime(df_complete['dob'], dayfirst=True, errors='coerce')
+  
+  ## Handling Null values and unformatted date to convert it to datetime
+  df_complete['driverDeath'] = df_complete['driverDeath'].str.strip()
+  df_complete['driverDeath'] = df_complete['driverDeath'].replace('\\N', np.nan)
+  df_complete['driverDeath'] = pd.to_datetime(df_complete['driverDeath'], errors='coerce', dayfirst=True)
+  ```
 
 - Addressed inaccuracies in age calculations by incorporating a new column containing the date of death drivers using web scraping (**drivers_update.ipynb**)
   
 - Managed missing numerical values to maintain data integrity
   
-```python
-## Changing the numeric data type
-change_data_type = ['number', 'position', 'time', 'timetaken_in_millisec', 'fastestLap', 'rank', 'maxSpeed']
-for i in change_data_type:
-    df_complete[i] = pd.to_numeric(df_complete[i], errors='coerce')
-```
+  ```python
+  ## Changing the numeric data type
+  change_data_type = ['number', 'position', 'time', 'timetaken_in_millisec', 'fastestLap', 'rank', 'maxSpeed']
+  for i in change_data_type:
+      df_complete[i] = pd.to_numeric(df_complete[i], errors='coerce')
+  ```
 
 - Enhanced geographic data by mapping driver nationalities to their respective countries, allowing for effective visual representation on Power BI maps
 
-```python
-nationality_map = dict(zip(df_countries['Nationality'], df_countries['Country']))
-df_complete['driverNationality'] = df_complete['driverNationality'].map(nationality_map).fillna(df_complete['driverNationality'])
-df_complete.head()
-```
+  ```python
+  nationality_map = dict(zip(df_countries['Nationality'], df_countries['Country']))
+  df_complete['driverNationality'] = df_complete['driverNationality'].map(nationality_map).fillna(df_complete['driverNationality'])
+  df_complete.head()
+  ```
 
 To achieve one of my key goals—identifying drivers who died while racing—I used web scraping to extract relevant data from Wikipedia and integrated it into the dataset (**wsFatalities.ipynb**).
 
